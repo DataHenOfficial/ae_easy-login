@@ -10,7 +10,7 @@ require 'minitest/spec'
 require 'minitest/autorun'
 require 'timecop'
 require 'byebug'
-require 'ae_easy/login'
+require 'dh_easy/login'
 
 # TODO: Create all automated tests. It was tested before within a couple
 # scrapers so we do know it works but we still need to provide full test

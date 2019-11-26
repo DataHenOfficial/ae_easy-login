@@ -1,4 +1,4 @@
-module AeEasy
+module DhEasy
   module Login
     # Gem version
     VERSION = '0.0.3'

@@ -1,31 +1,31 @@
-[![Documentation](http://img.shields.io/badge/docs-rdoc.info-blue.svg)](http://rubydoc.org/gems/ae_easy-login/frames)
-[![Gem Version](https://badge.fury.io/rb/ae_easy-login.svg)](http://github.com/answersengine/ae_easy-login/releases)
+[![Documentation](http://img.shields.io/badge/docs-rdoc.info-blue.svg)](http://rubydoc.org/gems/dh_easy-login/frames)
+[![Gem Version](https://badge.fury.io/rb/dh_easy-login.svg)](http://github.com/DataHenOfficial/dh_easy-login/releases)
 [![License](http://img.shields.io/badge/license-MIT-yellowgreen.svg)](#license)
 
-# AeEasy login module
+# DhEasy login module
 ## Description
 
-AeEasy login is part of AeEasy gem collection. It provides an easy way to handle login and session recovery, quite useful when scraping websites with login features and expiring sessions.
+DhEasy login is part of DhEasy gem collection. It provides an easy way to handle login and session recovery, quite useful when scraping websites with login features and expiring sessions.
 
 Install gem:
 ```ruby
-gem install 'ae_easy-login'
+gem install 'dh_easy-login'
 ```
 
 Require gem:
 ```ruby
- require 'ae_easy/login'
+ require 'dh_easy/login'
 ```
 
-Code documentation can be found [here](http://rubydoc.org/gems/ae_easy-login/frames).
+Code documentation can be found [here](http://rubydoc.org/gems/dh_easy-login/frames).
 
 ## How to implement
 
 ### Before you start
 
-It is true that most user cases for `ae_easy-login` gem applies to websites with login pages and create sessions, so we will cover this scenario on our example.
+It is true that most user cases for `dh_easy-login` gem applies to websites with login pages and create sessions, so we will cover this scenario on our example.
 
-Therefore, `ae_easy-login` gem is designed to handle **ANY** kind of session recovery, even those that doesn't requires a login form `POST` by just changing the flow from:
+Therefore, `dh_easy-login` gem is designed to handle **ANY** kind of session recovery, even those that doesn't requires a login form `POST` by just changing the flow from:
 
 ```
 login -> login_post -> restore
@@ -37,7 +37,7 @@ To whatever you need like for example:
 home -> search_page -> restore
 ```
 
-Here are some user case examples that can be fixed by `ae_easy-login` gem:
+Here are some user case examples that can be fixed by `dh_easy-login` gem:
 
  * Websites that invalidate requests with fast expiring cookies created on first request.
  * Websites that generates tokens on every search (either on cookies or query_params) that are required to fetch a detail page.
@@ -47,11 +47,11 @@ Here are some user case examples that can be fixed by `ae_easy-login` gem:
 
 Feel confident to expirement with it until it fit all your needs.
 
-### Adding ae_easy-login to your project
+### Adding dh_easy-login to your project
 
-Let's assume a simple project implementing `ae_easy` like the one described on [ae_easy README.md](https://github.com/answersengine/ae_easy/blob/master/README.md) that scrapers your website.
+Let's assume a simple project implementing `dh_easy` like the one described on [dh_easy README.md](https://github.com/DataHenOfficial/dh_easy/blob/master/README.md) that scrapers your website.
 
-Now lets assume your website has a login page `https://example.com/login` with a session that expires before our sample project scrape job finish, causing all remaining webpages to respond `403` HTTP response code and fail... quite the problem isn't it? Well, not anymore, `ae_easy-login` gem to the rescue!
+Now lets assume your website has a login page `https://example.com/login` with a session that expires before our sample project scrape job finish, causing all remaining webpages to respond `403` HTTP response code and fail... quite the problem isn't it? Well, not anymore, `dh_easy-login` gem to the rescue!
 
 First, let's create our base module that will contain our session validation and recovery logic, for this example, we will call it `LoginEnable` :
 
@@ -59,12 +59,12 @@ First, let's create our base module that will contain our session validation and
 # ./lib/login_enable.rb
 
 module LoginEnable
-  include AeEasy::Login::Plugin::EnabledBehavior
+  include DhEasy::Login::Plugin::EnabledBehavior
   
   # Hook to initialize login_flow configuration.
   def initialize_hook_login_plugin_enabled_behavior opts = {}
-    opts = {app_config: AeEasy::Core::Config.new(opts)}.merge opts
-    @login_flow = AeEasy::Login::Flow.new opts
+    opts = {app_config: DhEasy::Core::Config.new(opts)}.merge opts
+    @login_flow = DhEasy::Login::Flow.new opts
     @cookie = nil
   end
 
@@ -74,7 +74,7 @@ module LoginEnable
       return @cookie if @cookie.nil?
       
       raw_cookie = page['response_cookie'] || page['response_headers']['Set-Cookie']
-      @cookie = AeEasy::Core::Helper::Cookie.update(page['headers']['Cookie'], raw_cookie)
+      @cookie = DhEasy::Core::Helper::Cookie.update(page['headers']['Cookie'], raw_cookie)
       @cookie
     end
   
@@ -123,7 +123,7 @@ Next step is to create a simple parser that enqueue the `POST` of our login page
 
 module Parsers
   class Login
-    include AeEasy::Core::Plugin::Parser
+    include DhEasy::Core::Plugin::Parser
     include LoginEnable
     
     def parse
@@ -150,7 +150,7 @@ Now let's handle the login response, seed and restore any page with an expired s
 
 module Parsers
   class LoginPost
-    include AeEasy::Core::Plugin::Parser
+    include DhEasy::Core::Plugin::Parser
     include LoginEnable
 
     def seed!
@@ -192,7 +192,7 @@ So next step is to modify our seeder so it allow the cookie inclusion by adding 
 
 module Seeder
   class Seeder
-    include AeEasy::Core::Plugin::Seeder
+    include DhEasy::Core::Plugin::Seeder
 
     def seed &block
       new_page = {
@@ -213,7 +213,7 @@ Now we will need to create a new seeder to seed login page:
 
 module Seeder
   class Login
-    include AeEasy::Core::Plugin::Seeder
+    include DhEasy::Core::Plugin::Seeder
 
     def seed
       pages << {
@@ -252,10 +252,10 @@ parsers:
     disabled: false
 ```
 
-And don't forget to modify `./ae_easy.yaml` to add our new routes and change our seeder so login page can be seed first instead of our old seeder:
+And don't forget to modify `./dh_easy.yaml` to add our new routes and change our seeder so login page can be seed first instead of our old seeder:
 
 ```yaml
-# ./ae_easy.yaml
+# ./dh_easy.yaml
 
 router:
   parser:
@@ -274,23 +274,23 @@ router:
       - class: Seeder::Login
 ```
 
-Now, let's will need to modify our routers as well since we modified our `ae_easy.yaml` routes and added new classes:
+Now, let's will need to modify our routers as well since we modified our `dh_easy.yaml` routes and added new classes:
 
 ```ruby
 # ./router/seeder.rb
 
-require 'ae_easy/router'
+require 'dh_easy/router'
 require './seeder/login'
 
-AeEasy::Router::Seeder.new.route context: self
+DhEasy::Router::Seeder.new.route context: self
 ```
 
 ```ruby
 # ./router/parser.rb
 
 require 'cgi'
-require 'ae_easy/router'
-require 'ae_easy/login'
+require 'dh_easy/router'
+require 'dh_easy/login'
 require './lib/login_enable'
 require './seeder/seeder'
 require './parsers/search'
@@ -298,7 +298,7 @@ require './parsers/product'
 require './parsers/login'
 require './parsers/login_post'
 
-AeEasy::Router::Parser.new.route context: self
+DhEasy::Router::Parser.new.route context: self
 ```
 
 Next, we need to include our `LoginEnable` module on every parser that requires session validation to fix any expired session request. To do this, we will be using our `LoginEnable#fix_session` function as the first thing to do on each parser's `parse` method:
@@ -308,7 +308,7 @@ Next, we need to include our `LoginEnable` module on every parser that requires 
 
 module Parsers
   class Search
-    include AeEasy::Core::Plugin::Parser
+    include DhEasy::Core::Plugin::Parser
     include LoginEnable
 
     def parse
@@ -333,7 +333,7 @@ end
 
 module Parsers
   class Product
-    include AeEasy::Core::Plugin::Parser
+    include DhEasy::Core::Plugin::Parser
     include LoginEnable
 
     def parse
@@ -362,7 +362,7 @@ As for this example, we already add it to our search pages enqueued by our seede
 
 module Parsers
   class Search
-    include AeEasy::Core::Plugin::Parser
+    include DhEasy::Core::Plugin::Parser
     include LoginEnable
 
     def parse

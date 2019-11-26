@@ -1,11 +1,11 @@
-module AeEasy
+module DhEasy
   module Login
     module Plugin
       # Abstract module that provides a template with minimal common logic to
       #   implement a login flow enabled plugin.
       # @abstract
       module EnabledBehavior
-        include AeEasy::Core::Plugin::InitializeHook
+        include DhEasy::Core::Plugin::InitializeHook
 
         # Login flow tool.
         attr_reader :login_flow
@@ -13,9 +13,9 @@ module AeEasy
         # Hook to initialize login_flow configuration.
         #
         # @param [Hash] opts ({}) Configuration options (see
-        #   AeEasy::Login::Flow#initialize_hook_login_flow).
+        #   DhEasy::Login::Flow#initialize_hook_login_flow).
         def initialize_hook_login_plugin_enabled_behavior opts = {}
-          @login_flow = AeEasy::Login::Flow.new opts
+          @login_flow = DhEasy::Login::Flow.new opts
         end
 
         # Generates a salt value based on the current page's login flow vars.

@@ -1,12 +1,12 @@
-module AeEasy
+module DhEasy
   module Login
     # Login flow executor designed to recover from an expired or invalid
     #   session.
     class Flow
-      include AeEasy::Core::Plugin::Executor
+      include DhEasy::Core::Plugin::Executor
 
       # App configuration to store login flow configuration.
-      # @return [AeEasy::Core::Config]
+      # @return [DhEasy::Core::Config]
       attr_accessor :app_config
 
       # Output collection used to store held pages to be fixed and fetched.
@@ -37,7 +37,7 @@ module AeEasy
       # Hook to initialize login flow configuration.
       #
       # @param [Hash] opts ({}) Configuration options.
-      # @option opts [AeEasy::Core::Config] :app_config (nil) App configuration to
+      # @option opts [DhEasy::Core::Config] :app_config (nil) App configuration to
       #   use.
       # @option opts [Integer] :per_page (100) Batch size used on query outputs.
       # @option opts [String] :collection ('login_flow_held_pages') Output
@@ -206,7 +206,7 @@ module AeEasy
       # @param [String,Array,Hash] old_cookie Old cookie to update.
       def merge_cookie old_cookie
         return config['cookie'] if old_cookie.nil?
-        AeEasy::Core::Helper::Cookie.update old_cookie, config['cookie']
+        DhEasy::Core::Helper::Cookie.update old_cookie, config['cookie']
       end
 
       # Add login flow reserved vars into a page.
@@ -245,9 +245,9 @@ module AeEasy
       #   held it for fix and enqueue login page by executing block.
       def fix_session &enqueue_login
         # Expire cookie when same as current page
-        old_cookie_hash = AeEasy::Core::Helper::Cookie.parse_from_request page['vars'][vars_key]
-        newest_cookie_hash = AeEasy::Core::Helper::Cookie.parse_from_request config['cookie']
-        same_cookie = AeEasy::Core::Helper::Cookie.include? old_cookie_hash, newest_cookie_hash
+        old_cookie_hash = DhEasy::Core::Helper::Cookie.parse_from_request page['vars'][vars_key]
+        newest_cookie_hash = DhEasy::Core::Helper::Cookie.parse_from_request config['cookie']
+        same_cookie = DhEasy::Core::Helper::Cookie.include? old_cookie_hash, newest_cookie_hash
         expire! if same_cookie && !config['expired']
 
         # Hold self page
